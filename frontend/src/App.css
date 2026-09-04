@@ -1,0 +1,75 @@
+.page {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 32px 20px;
+  text-align: left;
+}
+
+.lead {
+  color: var(--text-muted, #666);
+  margin-bottom: 24px;
+}
+
+.upload-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.upload-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-weight: 600;
+}
+
+.upload-form input[type='text'],
+.upload-form input[type='file'] {
+  font-weight: normal;
+  padding: 8px;
+  border: 1px solid var(--border, #ccc);
+  border-radius: 6px;
+}
+
+.upload-form button {
+  align-self: flex-start;
+  padding: 8px 16px;
+  border-radius: 6px;
+  border: none;
+  background: #d62828;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.upload-form button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.error {
+  color: #d62828;
+  margin-top: 16px;
+}
+
+.job {
+  margin-top: 32px;
+  padding: 16px;
+  border: 1px solid var(--border, #ccc);
+  border-radius: 8px;
+}
+
+.job dl {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 4px 12px;
+  margin: 8px 0 0;
+}
+
+.job dt {
+  font-weight: 600;
+}
+
+.job dd {
+  margin: 0;
+}
