@@ -191,11 +191,6 @@
   color: var(--accent);
 }
 
-.dropzone--filled {
-  border-style: solid;
-  border-color: var(--success);
-}
-
 .dropzone__title {
   font-size: 15px;
   font-weight: 600;
@@ -207,15 +202,78 @@
   color: var(--text-dim);
 }
 
-.dropzone__filename {
-  font-size: 15px;
-  font-weight: 600;
-  color: var(--text);
-  word-break: break-all;
-}
-
 .dropzone__input {
   display: none;
+}
+
+/* Selected file list */
+
+.file-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.file-list__item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--bg-elevated-2);
+}
+
+.file-list__item svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  color: var(--text-dim);
+}
+
+.file-list__name {
+  flex: 1;
+  font-size: 14px;
+  color: var(--text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.file-list__size {
+  font-size: 12px;
+  color: var(--text-dim);
+  flex-shrink: 0;
+}
+
+.file-list__remove {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text-dim);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.file-list__remove svg {
+  width: 14px;
+  height: 14px;
+  color: inherit;
+  margin: 0;
+}
+
+.file-list__remove:hover {
+  background: var(--border);
+  color: var(--text);
 }
 
 /* Submit button */
@@ -262,10 +320,18 @@
   font-size: 14px;
 }
 
-/* Job result card */
+/* Job result cards */
+
+.results-list {
+  list-style: none;
+  margin: 24px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
 
 .job-card {
-  margin-top: 24px;
   padding: 20px;
   border-radius: 12px;
   border: 1px solid var(--border);
@@ -281,7 +347,17 @@
 }
 
 .job-card__header h2 {
-  font-size: 17px;
+  font-size: 15px;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.job-card__error {
+  margin: 0;
+  font-size: 13px;
+  color: var(--danger);
 }
 
 .job-card__meta {

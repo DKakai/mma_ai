@@ -1,4 +1,4 @@
-# MMA AI — virtuell tränare för combat sports
+# Combat AI — virtuell tränare för combat sports
 
 En AI-driven assistent för MMA, boxning och kickboxning som hjälper tränare och
 fighters att:
