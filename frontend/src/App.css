@@ -5,6 +5,10 @@
   text-align: left;
 }
 
+.page h1 {
+  line-height: 1.2;
+}
+
 .lead {
   color: var(--text-muted, #666);
   margin-bottom: 24px;
