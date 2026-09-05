@@ -67,3 +67,38 @@ cd frontend
 npm install
 npm run dev
 ```
+
+## Deploy (webben)
+
+Backend körs som en vanlig långlivad process (inte serverless) eftersom
+analysjobben hålls i minnet och kommande faser (video/pose-estimation) behöver
+längre körtider än vad serverless-funktioner tillåter.
+
+### Backend → Render
+
+1. Gå till [render.com](https://render.com) och skapa ett nytt **Blueprint**
+   (New + → Blueprint), koppla GitHub-repot. Render läser `render.yaml` i
+   repo-roten och sätter upp tjänsten automatiskt (rot: `backend/`).
+2. När tjänsten är uppe, notera dess URL, t.ex.
+   `https://combat-ai-backend.onrender.com`.
+
+### Frontend → Vercel
+
+1. Gå till [vercel.com](https://vercel.com) → **Add New Project** → importera
+   samma GitHub-repo.
+2. Sätt **Root Directory** till `frontend` (Vercel känner igen Vite
+   automatiskt).
+3. Lägg till miljövariabeln `VITE_API_BASE` = din Render-URL från steget ovan
+   (t.ex. `https://combat-ai-backend.onrender.com`).
+4. Deploya.
+
+### Koppla ihop dem
+
+Backend behöver veta vilken domän frontend körs på för att tillåta
+anrop (CORS). I Render-tjänstens miljövariabler, sätt:
+
+```
+COMBAT_AI_CORS_ALLOW_ORIGINS=https://<ditt-projekt>.vercel.app,http://localhost:5173
+```
+
+och redeploya backend-tjänsten.

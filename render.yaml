@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: combat-ai-backend
+    env: python
+    plan: free
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: COMBAT_AI_CORS_ALLOW_ORIGINS
+        value: http://localhost:5173
