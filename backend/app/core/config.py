@@ -8,6 +8,9 @@ class Settings(BaseSettings):
         default="http://localhost:5173",
         validation_alias="COMBAT_AI_CORS_ALLOW_ORIGINS",
     )
+    anthropic_api_key: str | None = Field(
+        default=None, validation_alias="ANTHROPIC_API_KEY"
+    )
 
     @property
     def cors_allow_origins(self) -> list[str]:

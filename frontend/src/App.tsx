@@ -335,16 +335,29 @@ function App() {
                   </div>
 
                   {result.status === 'done' && result.job && (
-                    <dl className="job-card__meta">
-                      <div>
-                        <dt>Fighter</dt>
-                        <dd>{result.job.fighter_name ?? '–'}</dd>
-                      </div>
-                      <div>
-                        <dt>Jobb-ID</dt>
-                        <dd className="job-card__id">{result.job.id}</dd>
-                      </div>
-                    </dl>
+                    <>
+                      <dl className="job-card__meta">
+                        <div>
+                          <dt>Fighter</dt>
+                          <dd>{result.job.fighter_name ?? '–'}</dd>
+                        </div>
+                        <div>
+                          <dt>Jobb-ID</dt>
+                          <dd className="job-card__id">{result.job.id}</dd>
+                        </div>
+                      </dl>
+                      {result.job.summary && (
+                        <p
+                          className={
+                            result.job.status === 'failed'
+                              ? 'job-card__error'
+                              : 'job-card__summary'
+                          }
+                        >
+                          {result.job.summary}
+                        </p>
+                      )}
+                    </>
                   )}
 
                   {result.status === 'error' && (

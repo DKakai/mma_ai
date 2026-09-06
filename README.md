@@ -46,8 +46,16 @@ inte från dag ett. Istället:
 
 ## Status
 
-Tidigt scaffolding-stadium. Inget av ovanstående är byggt än — se
-`backend/` och `frontend/` för nuvarande skelett.
+Tidigt stadium. Uppladdningsflödet är kopplat till en enkel men riktig
+pipeline: varje klipp läses med OpenCV för grundläggande metadata (längd,
+upplösning, fps — ingen ffmpeg-installation krävs), och en Claude-genererad
+kommentar skickas tillbaka baserat på det. Det är ett steg före fas 1 —
+riktig rörelsedata/pose-estimation och fas 2:s manuella taggning är inte
+byggda än, så analystexten är medvetet ytlig tills dess.
+
+Kräver en `ANTHROPIC_API_KEY` för att LLM-delen ska fungera — se
+[Deploy](#deploy-webben) nedan. Utan den markeras jobbet som "Misslyckades"
+med ett tydligt felmeddelande istället för att krascha.
 
 ## Utveckling
 
@@ -57,6 +65,7 @@ Tidigt scaffolding-stadium. Inget av ovanstående är byggt än — se
 cd backend
 python3 -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
+export ANTHROPIC_API_KEY=sk-ant-...   # krävs för LLM-analysen, annars markeras jobb som misslyckade
 uvicorn app.main:app --reload
 ```
 
@@ -79,7 +88,12 @@ längre körtider än vad serverless-funktioner tillåter.
 1. Gå till [render.com](https://render.com) och skapa ett nytt **Blueprint**
    (New + → Blueprint), koppla GitHub-repot. Render läser `render.yaml` i
    repo-roten och sätter upp tjänsten automatiskt (rot: `backend/`).
-2. När tjänsten är uppe, notera dess URL, t.ex.
+2. Render frågar efter värdet för `ANTHROPIC_API_KEY` under uppsättningen
+   (den är markerad som secret i `render.yaml` och synkas inte automatiskt).
+   Skaffa en nyckel på [console.anthropic.com](https://console.anthropic.com)
+   → **API Keys**, och klistra in den där. Kan även sättas/ändras senare under
+   tjänstens **Environment**-flik.
+3. När tjänsten är uppe, notera dess URL, t.ex.
    `https://combat-ai-backend.onrender.com`.
 
 ### Frontend → Vercel
