@@ -360,15 +360,6 @@
   color: var(--danger);
 }
 
-.job-card__summary {
-  margin: 12px 0 0;
-  padding-top: 12px;
-  border-top: 1px solid var(--border);
-  font-size: 14px;
-  line-height: 1.5;
-  color: var(--text-muted);
-}
-
 .job-card__meta {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -444,6 +435,61 @@
 .status-badge--failed {
   color: var(--danger);
   background: rgba(255, 90, 95, 0.14);
+}
+
+/* Navigation links */
+
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 24px;
+  color: var(--text-muted);
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.back-link svg {
+  width: 16px;
+  height: 16px;
+}
+
+.back-link:hover {
+  color: var(--text);
+}
+
+.upload-page__link {
+  margin-top: 20px;
+  text-align: center;
+  font-size: 14px;
+}
+
+.upload-page__link a {
+  color: var(--accent);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.upload-page__link a:hover {
+  text-decoration: underline;
+}
+
+.empty-state {
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 14px;
+  padding: 24px 0;
+}
+
+.empty-state a {
+  color: var(--accent);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.empty-state a:hover {
+  text-decoration: underline;
 }
 
 /* Footer */

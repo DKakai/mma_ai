@@ -5,11 +5,6 @@ import uuid
 from fastapi import APIRouter, HTTPException, UploadFile
 
 from app.models.analysis import AnalysisJob, AnalysisStatus
-from app.services.llm_analysis import (
-    LLMNotConfiguredError,
-    LLMRequestError,
-    generate_fighter_analysis,
-)
 from app.services.video_metadata import UnreadableVideoError, extract_clip_metadata
 
 router = APIRouter(prefix="/api/analysis", tags=["analysis"])
@@ -33,12 +28,12 @@ async def upload_clip(file: UploadFile, fighter_name: str | None = None) -> Anal
 
     try:
         metadata = extract_clip_metadata(tmp_path)
-        job.summary = generate_fighter_analysis(fighter_name, metadata)
         job.status = AnalysisStatus.DONE
+        job.duration_seconds = round(metadata.duration_seconds, 1)
+        job.width = metadata.width
+        job.height = metadata.height
+        job.fps = round(metadata.fps, 1)
     except UnreadableVideoError as e:
-        job.status = AnalysisStatus.FAILED
-        job.summary = str(e)
-    except (LLMNotConfiguredError, LLMRequestError) as e:
         job.status = AnalysisStatus.FAILED
         job.summary = str(e)
     finally:
