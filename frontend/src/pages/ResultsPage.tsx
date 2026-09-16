@@ -137,6 +137,27 @@ export default function ResultsPage({ results }: Props) {
                             stilanalys, och personerna är inte garanterat
                             samma individ genom hela klippet än.
                           </p>
+
+                          {result.job.annotated_frames.length > 0 && (
+                            <div className="skeleton-gallery">
+                              <p className="skeleton-gallery__label">
+                                Skelett-overlay — se själv var modellen
+                                placerar lederna (klicka för fullstorlek)
+                              </p>
+                              <div className="skeleton-gallery__grid">
+                                {result.job.annotated_frames.map((src, i) => (
+                                  <a
+                                    key={i}
+                                    href={src}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                  >
+                                    <img src={src} alt={`Skelett, bildruta ${i + 1}`} />
+                                  </a>
+                                ))}
+                              </div>
+                            </div>
+                          )}
                         </div>
                       )}
                   </>

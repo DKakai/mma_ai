@@ -490,6 +490,44 @@
   color: var(--text-dim);
 }
 
+/* Skeleton overlay gallery */
+
+.skeleton-gallery {
+  margin-top: 14px;
+}
+
+.skeleton-gallery__label {
+  margin: 0 0 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.skeleton-gallery__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+  gap: 8px;
+}
+
+.skeleton-gallery__grid a {
+  display: block;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  line-height: 0;
+}
+
+.skeleton-gallery__grid img {
+  width: 100%;
+  height: auto;
+  display: block;
+  transition: opacity 0.15s ease;
+}
+
+.skeleton-gallery__grid a:hover img {
+  opacity: 0.8;
+}
+
 /* Status badge */
 
 .status-badge {

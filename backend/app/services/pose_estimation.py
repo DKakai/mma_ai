@@ -10,6 +10,7 @@ Ingen identifiering av VEM personerna är — bara att det finns personer,
 var deras leder är i varje samplad bildruta, och hur mycket de rör sig.
 """
 
+import base64
 from pathlib import Path
 
 import cv2
@@ -22,15 +23,20 @@ _MODEL_PATH = Path(__file__).resolve().parents[2] / "ml_models" / "pose_landmark
 
 _vision = mp.tasks.vision
 _LANDMARK_NAMES = [lm.name for lm in _vision.PoseLandmark]
+_POSE_CONNECTIONS = _vision.PoseLandmarksConnections.POSE_LANDMARKS
 
 # Ett litet urval leder räcker för ett grovt rörelsemått.
 _MOVEMENT_LANDMARKS = {"LEFT_WRIST", "RIGHT_WRIST", "LEFT_ANKLE", "RIGHT_ANKLE"}
+
+_ANNOTATED_MAX_WIDTH = 640
+_ANNOTATED_JPEG_QUALITY = 75
 
 
 class MovementData(BaseModel):
     frames_sampled: int
     max_people_in_frame: int
     people: list[PersonMovement]
+    annotated_frames: list[str] = []
 
 
 def _sample_frame_indices(frame_count: int, num_samples: int) -> list[int]:
@@ -51,6 +57,25 @@ def _make_landmarker(num_poses: int):
         min_pose_detection_confidence=0.4,
     )
     return _vision.PoseLandmarker.create_from_options(options)
+
+
+def _annotate_frame(frame_bgr, people_landmarks: list) -> str | None:
+    """Ritar skelett (33 punkter + leder) för varje upptäckt person på en
+    kopia av bildrutan, och returnerar den som en base64-kodad JPEG-datauri
+    — så man kan se med egna ögon var modellen tror att lederna sitter."""
+    height, width = frame_bgr.shape[:2]
+    if width > _ANNOTATED_MAX_WIDTH:
+        scale = _ANNOTATED_MAX_WIDTH / width
+        frame_bgr = cv2.resize(frame_bgr, (int(width * scale), int(height * scale)))
+
+    annotated = frame_bgr.copy()
+    for landmarks in people_landmarks:
+        _vision.drawing_utils.draw_landmarks(annotated, landmarks, _POSE_CONNECTIONS)
+
+    ok, buf = cv2.imencode(".jpg", annotated, [cv2.IMWRITE_JPEG_QUALITY, _ANNOTATED_JPEG_QUALITY])
+    if not ok:
+        return None
+    return "data:image/jpeg;base64," + base64.b64encode(buf).decode("ascii")
 
 
 def _activity_from_series(series: list[dict[str, tuple[float, float]]]) -> PersonMovement:
@@ -82,6 +107,7 @@ def extract_movement_data(
 
         series: list[list[dict[str, tuple[float, float]]]] = [[] for _ in range(max_people)]
         max_people_seen = 0
+        annotated_frames: list[str] = []
 
         with _make_landmarker(max_people) as landmarker:
             frame_idx = 0
@@ -103,6 +129,11 @@ def extract_movement_data(
                             if _LANDMARK_NAMES[i] in _MOVEMENT_LANDMARKS
                         }
                         series[person_idx].append(points)
+
+                    if result.pose_landmarks:
+                        annotated = _annotate_frame(frame, result.pose_landmarks)
+                        if annotated:
+                            annotated_frames.append(annotated)
                 frame_idx += 1
     finally:
         capture.release()
@@ -113,4 +144,5 @@ def extract_movement_data(
         frames_sampled=len(wanted_indices),
         max_people_in_frame=max_people_seen,
         people=people,
+        annotated_frames=annotated_frames,
     )

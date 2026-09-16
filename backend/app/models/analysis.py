@@ -27,3 +27,4 @@ class AnalysisJob(BaseModel):
     frames_sampled: int | None = None
     max_people_in_frame: int | None = None
     people: list[PersonMovement] = []
+    annotated_frames: list[str] = []

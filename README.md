@@ -56,9 +56,14 @@ Tidigt stadium, men uppladdningsflödet kör nu på riktig data i två steg:
    okalibrerat rörelsemått per person (baserat på hur mycket handleder/
    anklar flyttar sig mellan samplade bildrutor). Personerna spåras inte
    garanterat konsekvent genom hela klippet än, och det är inte en
-   teknik- eller stilanalys — bara ett första steg mot fas 1.
+   teknik- eller stilanalys — bara ett första steg mot fas 1. Varje samplad
+   bildruta med en upptäckt person visas också som en bild med skelettet
+   (33 punkter + leder) inritat, så man visuellt kan bedöma träffsäkerheten
+   på riktig matchfilm — särskilt relevant eftersom modellen bara är testad
+   mot ett syntetiskt exempel under utveckling, inte riktiga fightklipp.
 
-Allt visas rakt av i UI:t som siffror, utan att låtsas vara mer än det är.
+Allt visas rakt av i UI:t som siffror och bilder, utan att låtsas vara mer
+än det är.
 
 Klipp kan också laddas in via en **YouTube-länk** istället för filuppladdning
 (backend laddar ner klippet med `yt-dlp`, max 15 minuter långt). Bara

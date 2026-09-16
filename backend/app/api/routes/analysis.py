@@ -30,6 +30,7 @@ def _run_pipeline(job: AnalysisJob, video_path: str) -> None:
         job.frames_sampled = movement.frames_sampled
         job.max_people_in_frame = movement.max_people_in_frame
         job.people = movement.people
+        job.annotated_frames = movement.annotated_frames
 
         job.status = AnalysisStatus.DONE
     except UnreadableVideoError as e:

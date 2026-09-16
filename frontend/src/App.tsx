@@ -26,6 +26,7 @@ export type AnalysisJob = {
   frames_sampled: number | null
   max_people_in_frame: number | null
   people: PersonMovement[]
+  annotated_frames: string[]
 }
 
 export type PendingItem =
