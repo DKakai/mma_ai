@@ -55,11 +55,7 @@ def _cookies_file() -> str | None:
 
 def _base_opts() -> dict:
     opts: dict = {
-        # TILLFÄLLIGT: verbose loggning (till stdout, syns i Render-loggen)
-        # för att felsöka YouTube-nedladdning på riktigt. Ta bort/återställ
-        # till quiet=True, verbose=False när det är löst.
-        "quiet": False,
-        "verbose": True,
+        "quiet": True,
         "no_warnings": True,
         "noplaylist": True,
         # yt-dlp löser YouTubes JS-utmaning (krävs för att undvika "The page
