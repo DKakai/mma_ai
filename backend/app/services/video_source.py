@@ -111,10 +111,12 @@ def download_from_url(url: str) -> str:
     tmp_dir = tempfile.mkdtemp()
     download_opts = {
         **_base_opts(),
-        # Ett redan hopmuxat format (video+ljud i en fil) väljs medvetet
-        # så vi slipper ett ffmpeg-beroende för att slå ihop separata
-        # video-/ljudströmmar.
-        "format": "best[height<=480][ext=mp4]/best[ext=mp4]/best",
+        # Format "18" (360p mp4+ljud, en enda fil) är i yt-dlp:s egen kod
+        # uttryckligen undantaget kravet på PO-token, till skillnad från de
+        # flesta andra format just nu — betydligt mer pålitligt än att låta
+        # yt-dlp välja "best" och riskera ett SABR-drabbat webb-format som
+        # ger 403 vid nedladdning. Behöver ingen hög upplösning ändå.
+        "format": "18/best[height<=480][ext=mp4]/best[ext=mp4]/best",
         "outtmpl": f"{tmp_dir}/%(id)s.%(ext)s",
         "max_filesize": _MAX_FILESIZE_BYTES,
     }
