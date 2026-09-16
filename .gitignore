@@ -9,5 +9,9 @@ backend/.venv/
 .env
 .env.local
 
+# YouTube cookies (never commit — see README "YouTube-cookies")
+cookies.txt
+*cookies*.txt
+
 # OS
 .DS_Store

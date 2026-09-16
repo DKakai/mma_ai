@@ -71,6 +71,10 @@ Klipp kan också laddas in via en **YouTube-länk** istället för filuppladdnin
 begränsa vilka URL:er backend gör anrop mot. Använd det bara för klipp du har
 rätt att analysera.
 
+YouTube blockerar ofta nedladdning från molnservrar (som Render) som
+misstänkt bottrafik. Lösningen är att skicka med cookies från en inloggad
+session — se [Deploy](#deploy-webben) nedan för hur du sätter upp det.
+
 LLM-analysen (fas 3) är medvetet inte inkopplad än — den väntar tills
 pose-datan är tillräckligt tillförlitlig (personspårning, fler
 rörelsemått) för att en genererad text ska ha verkligt underlag.
@@ -117,6 +121,25 @@ längre körtider än vad serverless-funktioner tillåter.
    repo-roten och sätter upp tjänsten automatiskt (rot: `backend/`).
 2. När tjänsten är uppe, notera dess URL, t.ex.
    `https://combat-ai-backend.onrender.com`.
+
+### YouTube-cookies (för att undvika bot-blockering)
+
+YouTube kräver ofta inloggning för nedladdning från molnservrar. Ge yt-dlp
+cookies från en riktig inloggad session:
+
+1. Installera ett webbläsartillägg som exporterar cookies i Netscape-format,
+   t.ex. **Get cookies.txt LOCALLY** (Chrome/Firefox).
+2. Logga in på [youtube.com](https://youtube.com) i webbläsaren, exportera
+   cookies för sajten med tillägget — du får en textfil.
+3. I Render → `combat-ai-backend` → **Environment**, lägg till `YOUTUBE_COOKIES`
+   och klistra in **hela innehållet** i cookiefilen som värde.
+
+**Säkerhetsnotis:** det här kontots YouTube-inloggning finns då lagrad på
+Render-servern. Använd helst ett konto du inte är orolig för om cookien
+någon gång skulle läcka — aldrig ditt huvudkonto om du kan undvika det.
+Committa **aldrig** cookiefilen till repot (den läggs bara in som en
+hemlig miljövariabel i Render, precis som `sync: false` i `render.yaml`
+markerar).
 
 ### Frontend → Vercel
 
