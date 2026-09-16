@@ -60,6 +60,12 @@ Tidigt stadium, men uppladdningsflödet kör nu på riktig data i två steg:
 
 Allt visas rakt av i UI:t som siffror, utan att låtsas vara mer än det är.
 
+Klipp kan också laddas in via en **YouTube-länk** istället för filuppladdning
+(backend laddar ner klippet med `yt-dlp`, max 15 minuter långt). Bara
+`youtube.com`/`youtu.be`-länkar tillåts just nu — inga andra sajter, för att
+begränsa vilka URL:er backend gör anrop mot. Använd det bara för klipp du har
+rätt att analysera.
+
 LLM-analysen (fas 3) är medvetet inte inkopplad än — den väntar tills
 pose-datan är tillräckligt tillförlitlig (personspårning, fler
 rörelsemått) för att en genererad text ska ha verkligt underlag.

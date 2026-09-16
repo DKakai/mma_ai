@@ -28,21 +28,31 @@ export type AnalysisJob = {
   people: PersonMovement[]
 }
 
+export type PendingItem =
+  | { kind: 'file'; file: File }
+  | { kind: 'url'; url: string }
+
 export type UploadResult = {
-  file: File
+  item: PendingItem
   status: 'uploading' | 'done' | 'error'
   job?: AnalysisJob
   error?: string
 }
 
-export function fileKey(file: File) {
-  return `${file.name}-${file.size}-${file.lastModified}`
+export function itemKey(item: PendingItem) {
+  return item.kind === 'file'
+    ? `file-${item.file.name}-${item.file.size}-${item.file.lastModified}`
+    : `url-${item.url}`
+}
+
+export function itemLabel(item: PendingItem) {
+  return item.kind === 'file' ? item.file.name : item.url
 }
 
 function AppShell() {
   const navigate = useNavigate()
   const [fighterName, setFighterName] = useState('')
-  const [files, setFiles] = useState<File[]>([])
+  const [items, setItems] = useState<PendingItem[]>([])
   const [results, setResults] = useState<UploadResult[]>([])
   const [error, setError] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
@@ -50,16 +60,27 @@ function AppShell() {
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   function addFiles(incoming: FileList | File[]) {
-    const incomingArray = Array.from(incoming)
-    setFiles((current) => {
-      const existingKeys = new Set(current.map(fileKey))
-      const newOnes = incomingArray.filter((f) => !existingKeys.has(fileKey(f)))
+    const incomingItems: PendingItem[] = Array.from(incoming).map((file) => ({
+      kind: 'file',
+      file,
+    }))
+    setItems((current) => {
+      const existingKeys = new Set(current.map(itemKey))
+      const newOnes = incomingItems.filter((it) => !existingKeys.has(itemKey(it)))
       return [...current, ...newOnes]
     })
   }
 
-  function removeFile(key: string) {
-    setFiles((current) => current.filter((f) => fileKey(f) !== key))
+  function addUrl(url: string) {
+    const item: PendingItem = { kind: 'url', url }
+    setItems((current) => {
+      if (current.some((it) => itemKey(it) === itemKey(item))) return current
+      return [...current, item]
+    })
+  }
+
+  function removeItem(key: string) {
+    setItems((current) => current.filter((it) => itemKey(it) !== key))
   }
 
   function handleDrag(event: DragEvent, active: boolean) {
@@ -73,52 +94,64 @@ function AppShell() {
     if (event.dataTransfer.files.length) addFiles(event.dataTransfer.files)
   }
 
-  async function uploadOne(file: File): Promise<AnalysisJob> {
-    const formData = new FormData()
-    formData.append('file', file)
-    const query = fighterName
-      ? `?fighter_name=${encodeURIComponent(fighterName)}`
-      : ''
-    const response = await fetch(`${API_BASE}/api/analysis/upload${query}`, {
+  async function uploadOne(item: PendingItem): Promise<AnalysisJob> {
+    if (item.kind === 'file') {
+      const formData = new FormData()
+      formData.append('file', item.file)
+      const query = fighterName
+        ? `?fighter_name=${encodeURIComponent(fighterName)}`
+        : ''
+      const response = await fetch(`${API_BASE}/api/analysis/upload${query}`, {
+        method: 'POST',
+        body: formData,
+      })
+      if (!response.ok) {
+        throw new Error(`Uppladdning misslyckades (${response.status})`)
+      }
+      return response.json()
+    }
+
+    const response = await fetch(`${API_BASE}/api/analysis/from-url`, {
       method: 'POST',
-      body: formData,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ url: item.url, fighter_name: fighterName || null }),
     })
     if (!response.ok) {
-      throw new Error(`Uppladdning misslyckades (${response.status})`)
+      throw new Error(`Analys misslyckades (${response.status})`)
     }
     return response.json()
   }
 
   async function handleSubmit(event: FormEvent) {
     event.preventDefault()
-    if (files.length === 0) {
-      setError('Välj minst ett videoklipp först.')
+    if (items.length === 0) {
+      setError('Välj minst ett videoklipp eller klistra in en länk först.')
       return
     }
     setError(null)
     setSubmitting(true)
 
-    const batch = files
-    setFiles([])
+    const batch = items
+    setItems([])
     setResults((current) => [
       ...current,
-      ...batch.map((file) => ({ file, status: 'uploading' as const })),
+      ...batch.map((item) => ({ item, status: 'uploading' as const })),
     ])
 
     navigate('/results')
 
-    for (const file of batch) {
+    for (const item of batch) {
       try {
-        const job = await uploadOne(file)
+        const job = await uploadOne(item)
         setResults((current) =>
           current.map((r) =>
-            r.file === file ? { ...r, status: 'done', job } : r,
+            r.item === item ? { ...r, status: 'done', job } : r,
           ),
         )
       } catch (err) {
         setResults((current) =>
           current.map((r) =>
-            r.file === file
+            r.item === item
               ? {
                   ...r,
                   status: 'error',
@@ -153,9 +186,10 @@ function AppShell() {
               <UploadPage
                 fighterName={fighterName}
                 setFighterName={setFighterName}
-                files={files}
+                items={items}
                 addFiles={addFiles}
-                removeFile={removeFile}
+                addUrl={addUrl}
+                removeItem={removeItem}
                 dragActive={dragActive}
                 handleDrag={handleDrag}
                 handleDrop={handleDrop}

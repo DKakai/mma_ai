@@ -1,7 +1,17 @@
-import { type DragEvent, type FormEvent, type RefObject } from 'react'
+import { type DragEvent, type FormEvent, type RefObject, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { fileKey } from '../App'
-import { CloseIcon, FilmIcon, UploadIcon } from '../icons'
+import { itemKey, itemLabel, type PendingItem } from '../App'
+import { CloseIcon, FilmIcon, LinkIcon, UploadIcon } from '../icons'
+
+const YOUTUBE_HOSTS = ['youtube.com', 'www.youtube.com', 'youtu.be', 'm.youtube.com']
+
+function isYoutubeUrl(url: string): boolean {
+  try {
+    return YOUTUBE_HOSTS.includes(new URL(url).hostname.toLowerCase())
+  } catch {
+    return false
+  }
+}
 
 function formatBytes(bytes: number) {
   if (bytes < 1024 * 1024) return `${Math.round(bytes / 1024)} kB`
@@ -11,9 +21,10 @@ function formatBytes(bytes: number) {
 type Props = {
   fighterName: string
   setFighterName: (value: string) => void
-  files: File[]
+  items: PendingItem[]
   addFiles: (files: FileList | File[]) => void
-  removeFile: (key: string) => void
+  addUrl: (url: string) => void
+  removeItem: (key: string) => void
   dragActive: boolean
   handleDrag: (event: DragEvent, active: boolean) => void
   handleDrop: (event: DragEvent) => void
@@ -27,9 +38,10 @@ type Props = {
 export default function UploadPage({
   fighterName,
   setFighterName,
-  files,
+  items,
   addFiles,
-  removeFile,
+  addUrl,
+  removeItem,
   dragActive,
   handleDrag,
   handleDrop,
@@ -39,16 +51,32 @@ export default function UploadPage({
   fileInputRef,
   hasResults,
 }: Props) {
+  const [urlInput, setUrlInput] = useState('')
+  const [urlError, setUrlError] = useState<string | null>(null)
+
+  function handleAddUrl() {
+    const trimmed = urlInput.trim()
+    if (!trimmed) return
+    if (!isYoutubeUrl(trimmed)) {
+      setUrlError('Bara YouTube-länkar stöds just nu.')
+      return
+    }
+    addUrl(trimmed)
+    setUrlInput('')
+    setUrlError(null)
+  }
+
   return (
     <>
       <section className="hero">
         <p className="hero__eyebrow">Fighter-analys</p>
         <h1>Ladda upp matchklipp, få en analys av fightern</h1>
         <p className="hero__lead">
-          Ett eller flera klipp av samma fighter räcker. Vi läser
-          grunddata ur klippet och kör pose-estimation för att se hur
-          många personer som syns och hur mycket de rör sig. Teknik- och
-          stilidentifiering kopplas in i en senare fas.
+          Ett eller flera klipp av samma fighter räcker — filer eller
+          YouTube-länkar går bra. Vi läser grunddata ur klippet och kör
+          pose-estimation för att se hur många personer som syns och hur
+          mycket de rör sig. Teknik- och stilidentifiering kopplas in i en
+          senare fas.
         </p>
       </section>
 
@@ -93,20 +121,47 @@ export default function UploadPage({
             />
           </button>
 
-          {files.length > 0 && (
+          <div className="url-field">
+            <span className="field__label">Eller klistra in en YouTube-länk</span>
+            <div className="url-field__row">
+              <input
+                type="url"
+                value={urlInput}
+                onChange={(e) => {
+                  setUrlInput(e.target.value)
+                  setUrlError(null)
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault()
+                    handleAddUrl()
+                  }
+                }}
+                placeholder="https://www.youtube.com/watch?v=..."
+              />
+              <button type="button" className="url-field__add" onClick={handleAddUrl}>
+                Lägg till
+              </button>
+            </div>
+            {urlError && <p className="url-field__error">{urlError}</p>}
+          </div>
+
+          {items.length > 0 && (
             <ul className="file-list">
-              {files.map((file) => (
-                <li key={fileKey(file)} className="file-list__item">
-                  <FilmIcon />
-                  <span className="file-list__name">{file.name}</span>
-                  <span className="file-list__size">
-                    {formatBytes(file.size)}
-                  </span>
+              {items.map((item) => (
+                <li key={itemKey(item)} className="file-list__item">
+                  {item.kind === 'file' ? <FilmIcon /> : <LinkIcon />}
+                  <span className="file-list__name">{itemLabel(item)}</span>
+                  {item.kind === 'file' && (
+                    <span className="file-list__size">
+                      {formatBytes(item.file.size)}
+                    </span>
+                  )}
                   <button
                     type="button"
                     className="file-list__remove"
-                    aria-label={`Ta bort ${file.name}`}
-                    onClick={() => removeFile(fileKey(file))}
+                    aria-label={`Ta bort ${itemLabel(item)}`}
+                    onClick={() => removeItem(itemKey(item))}
                   >
                     <CloseIcon />
                   </button>
@@ -118,8 +173,8 @@ export default function UploadPage({
           <button type="submit" className="submit-btn" disabled={submitting}>
             {submitting
               ? 'Laddar upp…'
-              : files.length > 1
-                ? `Starta analys (${files.length} klipp)`
+              : items.length > 1
+                ? `Starta analys (${items.length} klipp)`
                 : 'Starta analys'}
           </button>
         </form>

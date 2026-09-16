@@ -206,6 +206,62 @@
   display: none;
 }
 
+/* URL field */
+
+.url-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.url-field__row {
+  display: flex;
+  gap: 8px;
+}
+
+.url-field__row input[type='url'] {
+  flex: 1;
+  min-width: 0;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--bg-elevated-2);
+  color: var(--text);
+  font-size: 15px;
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+
+.url-field__row input[type='url']::placeholder {
+  color: var(--text-dim);
+}
+
+.url-field__row input[type='url']:focus {
+  border-color: var(--accent);
+}
+
+.url-field__add {
+  padding: 0 16px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--bg-elevated-2);
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.url-field__add:hover {
+  border-color: var(--text-dim);
+}
+
+.url-field__error {
+  margin: 0;
+  font-size: 13px;
+  color: var(--danger);
+}
+
 /* Selected file list */
 
 .file-list {

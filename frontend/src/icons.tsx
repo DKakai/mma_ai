@@ -76,6 +76,20 @@ export function GloveIcon() {
   )
 }
 
+export function LinkIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path
+        d="M9 15l6-6M10 7l1.3-1.3a3.5 3.5 0 0 1 5 5L15 12M14 17l-1.3 1.3a3.5 3.5 0 0 1-5-5L9 12"
+        stroke="currentColor"
+        strokeWidth="1.7"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  )
+}
+
 export function ArrowLeftIcon() {
   return (
     <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">

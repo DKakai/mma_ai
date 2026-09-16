@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 import type { AnalysisStatus, UploadResult } from '../App'
-import { fileKey } from '../App'
+import { itemKey, itemLabel } from '../App'
 import { ArrowLeftIcon } from '../icons'
 
 const STATUS_LABEL: Record<AnalysisStatus, string> = {
@@ -51,9 +51,9 @@ export default function ResultsPage({ results }: Props) {
         ) : (
           <ul className="results-list">
             {[...results].reverse().map((result) => (
-              <li key={fileKey(result.file)} className="job-card">
+              <li key={itemKey(result.item)} className="job-card">
                 <div className="job-card__header">
-                  <h2>{result.file.name}</h2>
+                  <h2>{itemLabel(result.item)}</h2>
                   {result.status === 'uploading' && (
                     <span className="status-badge status-badge--pending">
                       <span className="status-badge__dot" />
