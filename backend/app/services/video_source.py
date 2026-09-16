@@ -58,6 +58,12 @@ def _base_opts() -> dict:
         "quiet": True,
         "no_warnings": True,
         "noplaylist": True,
+        # Låtsas vara YouTubes tv-/android-klienter istället för webbläsaren.
+        # De körs ofta igenom utan "sign in to confirm you're not a bot" som
+        # annars drabbar molnserver-IP:er — gratis att prova, ingen cookie
+        # krävs. Om YouTube ändå kräver inloggning faller vi tillbaka på
+        # YOUTUBE_COOKIES nedan (om satt).
+        "extractor_args": {"youtube": {"player_client": ["tv", "android"]}},
     }
     cookies_path = _cookies_file()
     if cookies_path:
