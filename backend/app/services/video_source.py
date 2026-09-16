@@ -58,16 +58,20 @@ def _base_opts() -> dict:
         "quiet": True,
         "no_warnings": True,
         "noplaylist": True,
-        # Låtsas vara YouTubes tv-/android-klienter istället för webbläsaren.
-        # De körs ofta igenom utan "sign in to confirm you're not a bot" som
-        # annars drabbar molnserver-IP:er — gratis att prova, ingen cookie
-        # krävs. Om YouTube ändå kräver inloggning faller vi tillbaka på
-        # YOUTUBE_COOKIES nedan (om satt).
-        "extractor_args": {"youtube": {"player_client": ["tv", "android"]}},
     }
     cookies_path = _cookies_file()
     if cookies_path:
+        # Cookies är inloggningsdata för webb-klienten — tv/android-klienterna
+        # autentiserar inte med webbläsar-cookies, så att tvinga fram dem
+        # samtidigt som cookies skickas ger en trasig, halvinloggad session
+        # (visar sig t.ex. som "The page needs to be reloaded"). Låt yt-dlp
+        # välja klient normalt (web) när vi faktiskt har cookies.
         opts["cookiefile"] = cookies_path
+    else:
+        # Utan cookies: låtsas vara YouTubes tv-/android-klienter istället
+        # för webbläsaren. De slipper ofta "sign in to confirm you're not a
+        # bot" som annars drabbar molnserver-IP:er — gratis att prova.
+        opts["extractor_args"] = {"youtube": {"player_client": ["tv", "android"]}}
     return opts
 
 
