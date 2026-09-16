@@ -7,7 +7,16 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libegl1 \
     libgl1 \
     libgles2 \
+    curl \
+    unzip \
+    ca-certificates \
     && rm -rf /var/lib/apt/lists/*
+
+# yt-dlp behöver en JS-runtime för att lösa YouTubes JS-utmaning vid
+# nedladdning — utan den svarar YouTube "The page needs to be reloaded"
+# även med giltiga cookies. bun är lätt att installera och stöds av yt-dlp.
+RUN curl -fsSL https://bun.sh/install | bash
+ENV PATH="/root/.bun/bin:${PATH}"
 
 WORKDIR /app
 

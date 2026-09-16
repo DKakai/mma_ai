@@ -58,6 +58,11 @@ def _base_opts() -> dict:
         "quiet": True,
         "no_warnings": True,
         "noplaylist": True,
+        # yt-dlp löser YouTubes JS-utmaning (krävs för att undvika "The page
+        # needs to be reloaded") med en lokal JS-runtime. Bara "deno" är
+        # aktiverad som standard — lägg även till "bun" (installerad i
+        # Dockerfile) så det funkar utan att en specifik runtime krävs.
+        "js_runtimes": {"deno": {}, "bun": {}},
     }
     cookies_path = _cookies_file()
     if cookies_path:
