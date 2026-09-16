@@ -1,4 +1,4 @@
-"""Fas 1: pose-estimation på CPU med MediaPipe (BlazePose "lite").
+"""Fas 1: pose-estimation på CPU med MediaPipe (BlazePose "full").
 
 Körs på ett antal jämnt utspridda bildrutor ur klippet (inte alla — video
 kan ha hundratals bildrutor och pose-estimation är förhållandevis tungt).
@@ -19,7 +19,7 @@ from pydantic import BaseModel
 
 from app.models.analysis import PersonMovement
 
-_MODEL_PATH = Path(__file__).resolve().parents[2] / "ml_models" / "pose_landmarker_lite.task"
+_MODEL_PATH = Path(__file__).resolve().parents[2] / "ml_models" / "pose_landmarker_full.task"
 
 _vision = mp.tasks.vision
 _LANDMARK_NAMES = [lm.name for lm in _vision.PoseLandmark]

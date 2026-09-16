@@ -51,16 +51,22 @@ Tidigt stadium, men uppladdningsflödet kör nu på riktig data i två steg:
 
 1. **Metadata** (OpenCV) — längd, upplösning, fps. Ingen ffmpeg-installation
    krävs.
-2. **Pose-estimation** (MediaPipe, CPU) — kör på ett antal jämnt utspridda
-   bildrutor ur klippet: hur många personer som syns, och ett grovt,
-   okalibrerat rörelsemått per person (baserat på hur mycket handleder/
-   anklar flyttar sig mellan samplade bildrutor). Personerna spåras inte
-   garanterat konsekvent genom hela klippet än, och det är inte en
-   teknik- eller stilanalys — bara ett första steg mot fas 1. Varje samplad
-   bildruta med en upptäckt person visas också som en bild med skelettet
-   (33 punkter + leder) inritat, så man visuellt kan bedöma träffsäkerheten
-   på riktig matchfilm — särskilt relevant eftersom modellen bara är testad
-   mot ett syntetiskt exempel under utveckling, inte riktiga fightklipp.
+2. **Pose-estimation** (MediaPipe "full"-modell, CPU) — kör på ett antal
+   jämnt utspridda bildrutor ur klippet: hur många personer som syns, och
+   ett grovt, okalibrerat rörelsemått per person (baserat på hur mycket
+   handleder/anklar flyttar sig mellan samplade bildrutor). Personerna
+   spåras inte garanterat konsekvent genom hela klippet än, och det är
+   inte en teknik- eller stilanalys — bara ett första steg mot fas 1. Varje
+   samplad bildruta med en upptäckt person visas också som en bild med
+   skelettet (33 punkter + leder) inritat, så man visuellt kan bedöma
+   träffsäkerheten på riktig matchfilm.
+
+   **Känd begränsning:** när två fighters delvis skymmer varandra (klinch,
+   närkamp) kan modellen fortfarande placera leder fel — den är "säker" på
+   att en led finns men gissar fel position när den inte syns. Detta är en
+   gräns för pose-estimation generellt vid ocklusion, inte en bugg som
+   fixas med en enkel patch. En riktig fix (separera personer i bilden
+   innan pose körs per person) är inte byggd än.
 
 Allt visas rakt av i UI:t som siffror och bilder, utan att låtsas vara mer
 än det är.
