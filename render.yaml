@@ -7,4 +7,4 @@ services:
     dockerfilePath: ./Dockerfile
     envVars:
       - key: COMBAT_AI_CORS_ALLOW_ORIGINS
-        value: http://localhost:5173
+        value: http://localhost:5173,https://mma-ai-five.vercel.app

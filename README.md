@@ -130,11 +130,17 @@ längre körtider än vad serverless-funktioner tillåter.
 
 ### Koppla ihop dem
 
-Backend behöver veta vilken domän frontend körs på för att tillåta
-anrop (CORS). I Render-tjänstens miljövariabler, sätt:
+Backend behöver veta vilken domän frontend körs på för att tillåta anrop
+(CORS). Detta sätts via `COMBAT_AI_CORS_ALLOW_ORIGINS` i `render.yaml` —
+**ändra värdet där i koden, inte bara i Render-dashboarden.** Render
+skriver över manuella dashboard-ändringar av miljövariabler som finns i
+`render.yaml` varje gång Blueprinten synkas (dvs. vid varje ny deploy), så
+en ändring som bara görs i dashboarden försvinner vid nästa push.
 
-```
-COMBAT_AI_CORS_ALLOW_ORIGINS=https://<ditt-projekt>.vercel.app,http://localhost:5173
+```yaml
+envVars:
+  - key: COMBAT_AI_CORS_ALLOW_ORIGINS
+    value: http://localhost:5173,https://<ditt-projekt>.vercel.app
 ```
 
 och redeploya backend-tjänsten.
