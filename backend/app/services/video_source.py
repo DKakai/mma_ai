@@ -67,6 +67,11 @@ def _base_opts() -> dict:
         # aktiverad som standard — lägg även till "bun" (installerad i
         # Dockerfile) så det funkar utan att en specifik runtime krävs.
         "js_runtimes": {"deno": {}, "bun": {}},
+        # bun/deno kör bara utmaningen — själva lösnings-skriptet måste
+        # dessutom hämtas separat (yt-dlp laddar inte ner det per default).
+        # Utan detta hoppas JS-utmaningen över helt ("Remote components
+        # challenge solver script ... were skipped").
+        "remote_components": {"ejs:github"},
     }
     cookies_path = _cookies_file()
     if cookies_path:
