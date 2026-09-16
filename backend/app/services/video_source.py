@@ -55,7 +55,11 @@ def _cookies_file() -> str | None:
 
 def _base_opts() -> dict:
     opts: dict = {
-        "quiet": True,
+        # TILLFÄLLIGT: verbose loggning för att felsöka det ihållande 403:an
+        # vid nedladdning. Ta bort igen (quiet=True, ingen verbose-rad) när
+        # det är löst.
+        "quiet": False,
+        "verbose": True,
         "no_warnings": True,
         "noplaylist": True,
         # yt-dlp löser YouTubes JS-utmaning (krävs för att undvika "The page
