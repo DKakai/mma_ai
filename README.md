@@ -29,9 +29,10 @@ Full automatisk teknikigenkänning från video (exakt slag-/sparktyp,
 combos, takedowns) kräver tränade modeller och mycket data — det bygger vi
 inte från dag ett. Istället:
 
-1. **Fas 1 — Grunddata från video.** Ladda upp matchklipp. Backend kör en
-   färdig pose-estimation-pipeline för att extrahera grundläggande
-   rörelsedata (stance, tempo, aktivitetsnivå, position i ringen/buren).
+1. **Fas 1 — Grunddata från video.** ✅ Grunden byggd: backend kör
+   pose-estimation (MediaPipe, CPU) på samplade bildrutor ur klippet —
+   antal personer i bild och ett grovt rörelsemått per person. Riktig
+   stance-klassificering, tempo och position i buren är inte byggt än.
 2. **Fas 2 — Manuell taggning.** Tränare kan markera specifika sekvenser/
    tekniker i klippet (t.ex. "leverkick i klinch", "takedown försök"). Detta
    ger precision som ren CV inte klarar än, och bygger upp träningsdata för
@@ -46,14 +47,26 @@ inte från dag ett. Istället:
 
 ## Status
 
-Tidigt stadium. Uppladdningsflödet är kopplat till en enkel men riktig
-pipeline: varje klipp läses med OpenCV för grundläggande metadata (längd,
-upplösning, fps — ingen ffmpeg-installation krävs). Det visas rakt av i
-UI:t som siffror, utan att låtsas vara en stilanalys.
+Tidigt stadium, men uppladdningsflödet kör nu på riktig data i två steg:
 
-LLM-analysen (fas 3) är medvetet inte inkopplad än — den väntar tills fas 1
-(pose-estimation) faktiskt kan identifiera en fighters rörelser, så att
-texten som genereras har verkligt underlag istället för att gissa.
+1. **Metadata** (OpenCV) — längd, upplösning, fps. Ingen ffmpeg-installation
+   krävs.
+2. **Pose-estimation** (MediaPipe, CPU) — kör på ett antal jämnt utspridda
+   bildrutor ur klippet: hur många personer som syns, och ett grovt,
+   okalibrerat rörelsemått per person (baserat på hur mycket handleder/
+   anklar flyttar sig mellan samplade bildrutor). Personerna spåras inte
+   garanterat konsekvent genom hela klippet än, och det är inte en
+   teknik- eller stilanalys — bara ett första steg mot fas 1.
+
+Allt visas rakt av i UI:t som siffror, utan att låtsas vara mer än det är.
+
+LLM-analysen (fas 3) är medvetet inte inkopplad än — den väntar tills
+pose-datan är tillräckligt tillförlitlig (personspårning, fler
+rörelsemått) för att en genererad text ska ha verkligt underlag.
+
+**Obs:** MediaPipe kräver systembiblioteken `libEGL`/`libGL` som inte
+finns i Renders vanliga Python-runtime. Backend körs därför via Docker
+(se `backend/Dockerfile` och `render.yaml`) istället för native Python.
 
 ## Utveckling
 
@@ -65,6 +78,12 @@ python3 -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
 uvicorn app.main:app --reload
 ```
+
+På Linux kan `mediapipe` klaga på saknade `libEGL.so.1`/`libGL.so.1` vid
+import (även fast allt körs på CPU). Installera då:
+`sudo apt-get install -y libegl1 libgl1`. På macOS/Windows brukar det inte
+behövas. Detta är också anledningen till att backend deployas via Docker
+(se nedan) — Render har inte dessa bibliotek i sin vanliga Python-miljö.
 
 ### Frontend
 

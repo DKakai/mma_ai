@@ -45,9 +45,10 @@ export default function UploadPage({
         <p className="hero__eyebrow">Fighter-analys</p>
         <h1>Ladda upp matchklipp, få en analys av fightern</h1>
         <p className="hero__lead">
-          Ett eller flera klipp av samma fighter räcker. Just nu läser vi
-          grunddata ur varje klipp (längd, upplösning, fps) — automatisk
-          identifiering av teknik och stil kopplas in i en senare fas.
+          Ett eller flera klipp av samma fighter räcker. Vi läser
+          grunddata ur klippet och kör pose-estimation för att se hur
+          många personer som syns och hur mycket de rör sig. Teknik- och
+          stilidentifiering kopplas in i en senare fas.
         </p>
       </section>
 

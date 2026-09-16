@@ -104,6 +104,41 @@ export default function ResultsPage({ results }: Props) {
                     {result.job.status === 'failed' && result.job.summary && (
                       <p className="job-card__error">{result.job.summary}</p>
                     )}
+
+                    {result.job.status === 'done' &&
+                      result.job.max_people_in_frame !== null && (
+                        <div className="pose-block">
+                          <p className="pose-block__label">
+                            Personer i bild (flest sedda i en bildruta):{' '}
+                            {result.job.max_people_in_frame}
+                          </p>
+
+                          {result.job.people.length > 0 ? (
+                            <ul className="pose-block__people">
+                              {result.job.people.map((person, i) => (
+                                <li key={i}>
+                                  Person {i + 1}:{' '}
+                                  {person.activity_level !== null
+                                    ? `rörelsenivå ${person.activity_level} (${person.frames_detected}/${result.job!.frames_sampled} bildrutor)`
+                                    : `syntes i ${person.frames_detected} bildruta(or) — för få träffar för att räkna rörelse`}
+                                </li>
+                              ))}
+                            </ul>
+                          ) : (
+                            <p className="pose-block__empty">
+                              Ingen person kunde spåras i klippet.
+                            </p>
+                          )}
+
+                          <p className="pose-block__note">
+                            Rörelsenivån är ett grovt, okalibrerat mått
+                            (förflyttning av handleder/anklar mellan
+                            samplade bildrutor) — inte en teknik- eller
+                            stilanalys, och personerna är inte garanterat
+                            samma individ genom hela klippet än.
+                          </p>
+                        </div>
+                      )}
                   </>
                 )}
 

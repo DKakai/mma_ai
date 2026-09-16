@@ -5,6 +5,7 @@ import uuid
 from fastapi import APIRouter, HTTPException, UploadFile
 
 from app.models.analysis import AnalysisJob, AnalysisStatus
+from app.services.pose_estimation import extract_movement_data
 from app.services.video_metadata import UnreadableVideoError, extract_clip_metadata
 
 router = APIRouter(prefix="/api/analysis", tags=["analysis"])
@@ -28,11 +29,17 @@ async def upload_clip(file: UploadFile, fighter_name: str | None = None) -> Anal
 
     try:
         metadata = extract_clip_metadata(tmp_path)
-        job.status = AnalysisStatus.DONE
         job.duration_seconds = round(metadata.duration_seconds, 1)
         job.width = metadata.width
         job.height = metadata.height
         job.fps = round(metadata.fps, 1)
+
+        movement = extract_movement_data(tmp_path)
+        job.frames_sampled = movement.frames_sampled
+        job.max_people_in_frame = movement.max_people_in_frame
+        job.people = movement.people
+
+        job.status = AnalysisStatus.DONE
     except UnreadableVideoError as e:
         job.status = AnalysisStatus.FAILED
         job.summary = str(e)

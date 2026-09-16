@@ -9,6 +9,11 @@ const API_BASE = import.meta.env.VITE_API_BASE ?? 'http://localhost:8000'
 
 export type AnalysisStatus = 'pending' | 'processing' | 'done' | 'failed'
 
+export type PersonMovement = {
+  frames_detected: number
+  activity_level: number | null
+}
+
 export type AnalysisJob = {
   id: string
   fighter_name: string | null
@@ -18,6 +23,9 @@ export type AnalysisJob = {
   width: number | null
   height: number | null
   fps: number | null
+  frames_sampled: number | null
+  max_people_in_frame: number | null
+  people: PersonMovement[]
 }
 
 export type UploadResult = {

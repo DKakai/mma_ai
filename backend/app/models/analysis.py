@@ -10,6 +10,11 @@ class AnalysisStatus(str, Enum):
     FAILED = "failed"
 
 
+class PersonMovement(BaseModel):
+    frames_detected: int
+    activity_level: float | None = None
+
+
 class AnalysisJob(BaseModel):
     id: str
     fighter_name: str | None = None
@@ -19,3 +24,6 @@ class AnalysisJob(BaseModel):
     width: int | None = None
     height: int | None = None
     fps: float | None = None
+    frames_sampled: int | None = None
+    max_people_in_frame: int | None = None
+    people: list[PersonMovement] = []
